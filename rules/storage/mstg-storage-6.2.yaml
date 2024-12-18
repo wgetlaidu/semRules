@@ -1,0 +1,25 @@
+rules:
+- id: MSTG-STORAGE-6.2
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序可能会通过剪贴板管理器暴露敏感数据。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M3
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#determining-whether-sensitive-stored-data-has-been-exposed-via-ipc-mechanisms-mstg-storage-6
+    verification-level:
+    - L1
+    - L2
+  options:
+    symbolic_propagation: true
+  patterns:
+  - pattern: (ClipboardManager $CM).setPrimaryClip(<... $P ...>)
+  - metavariable-regex:
+      metavariable: $P
+      regex: .*(?i)(key|secret|password|pwd|passwd|token|seed|otp(?-i)|IV).*
+  severity: WARNING

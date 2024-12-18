@@ -1,0 +1,36 @@
+rules:
+- id: MSTG-CRYPTO-2
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序使用加密原语的自定义实现。\"\n}"
+  metadata:
+    area: cryptography
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M5
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05e-Testing-Cryptography.md#testing-the-configuration-of-cryptographic-standard-algorithms-mstg-crypto-2-mstg-crypto-3-and-mstg-crypto-4
+    verification-level:
+    - L1
+    - L2
+  options:
+    symbolic_propagation: true
+  pattern-either:
+  - patterns:
+    - pattern-inside: $M(...){ ... }
+    - pattern: $A ^ $B;
+    - metavariable-regex:
+        metavariable: $M
+        regex: .*(?i)(crypt).*
+  - patterns:
+    - pattern-inside: $M(...){ ... }
+    - pattern: $X(...)
+    - metavariable-regex:
+        metavariable: $X
+        regex: .*(?i)(xor).*
+    - metavariable-regex:
+        metavariable: $M
+        regex: .*(?i)(crypt).*
+  severity: WARNING

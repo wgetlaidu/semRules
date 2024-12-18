@@ -1,0 +1,63 @@
+rules:
+- id: MSTG-CRYPTO-4
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序使用已弃用的加密算法。\"\n}"
+  metadata:
+    area: cryptography
+    authors:
+    - Maurizio Siddu @akabe1 (IMQ Minded Security)
+    category: security
+    owasp-mobile: M5
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x04g-Testing-Cryptography.md#identifying-insecure-andor-deprecated-cryptographic-algorithms-mstg-crypto-4
+    verification-level:
+    - L1
+    - L2
+  patterns:
+  - pattern-either:
+    - patterns:
+      - pattern: 'Cipher $CIP = Cipher.getInstance("=~/.*\/ECB\/.*/", ...);
+
+          '
+    - patterns:
+      - pattern: 'Cipher $CIP = Cipher.getInstance("=~/.*\/CBC\/(PKCS5|PKCS7)Padding/",
+          ...);
+
+          '
+    - patterns:
+      - pattern: 'Cipher $CIP = Cipher.getInstance("=~/(3DES|DESede|DES|Blowfish)\/.*\/.*/",
+          ...);
+
+          '
+    - patterns:
+      - pattern: 'SecretKeyFactory $VAR = SecretKeyFactory.getInstance("=~/(3DES|DESede|DES)/",
+          ...);
+
+          '
+    - patterns:
+      - pattern: 'SecureRandom $SR = SecureRandom.getInstance($VAR, "=~/Crypto/");
+
+          '
+    - patterns:
+      - pattern-inside: "KeyGenParameterSpec $KGPS = new KeyGenParameterSpec.Builder(...)\n\
+          \  . ...\n  .setBlockModes(KeyProperties.BLOCK_MODE_ECB)\n  . ...\n  .build();\n"
+    - patterns:
+      - pattern-inside: "KeyGenParameterSpec $KGPS = new KeyGenParameterSpec.Builder(...)\n\
+          \   . ...\n   .setBlockModes(KeyProperties.BLOCK_MODE_CBC)\n   . ...\n \
+          \  .setEncryptionPaddings($PAD)\n   . ...\n   .build();\n"
+      - metavariable-regex:
+          metavariable: $PAD
+          regex: KeyProperties\.ENCRYPTION_PADDING_(PKCS7|PKCS5)
+    - patterns:
+      - pattern-inside: "$KG.initialize(new KeyGenParameterSpec.Builder(...)\n  .\
+          \ ...\n  .setBlockModes(KeyProperties.BLOCK_MODE_ECB)\n  . ...\n  .build());\n"
+    - patterns:
+      - pattern-inside: "$KG.initialize(new KeyGenParameterSpec.Builder(...)\n  .\
+          \ ...\n  .setBlockModes(KeyProperties.BLOCK_MODE_CBC)\n  . ...\n  .setEncryptionPaddings($PAD)\n\
+          \  . ...\n  .build());\n"
+      - metavariable-regex:
+          metavariable: $PAD
+          regex: KeyProperties\.ENCRYPTION_PADDING_(PKCS7|PKCS5)
+  severity: WARNING

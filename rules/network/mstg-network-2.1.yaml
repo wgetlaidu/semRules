@@ -1,0 +1,32 @@
+rules:
+- id: MSTG-NETWORK-2.1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"使用弱传输协议版本$PROTO。\"\n}"
+  metadata:
+    area: network
+    authors:
+    - Giacomo Zorzin @gellge (IMQ Minded Security)
+    category: security
+    owasp-mobile: M3
+    references:
+    - https://github.com/OWASP/owasp-mastg/tree/v1.5.0/Document/0x04f-Testing-Network-Communication.md
+    verification-level:
+    - L1
+    - L2
+  options:
+    symbolic_propagation: true
+  patterns:
+  - pattern-inside: "$FUN(...){\n  ...\n}\n"
+  - pattern: 'SSLContext.getInstance("$PROTO",...);
+
+      ...
+
+      (SSLContext $OBJ).init(...);
+
+      '
+  - metavariable-regex:
+      metavariable: $PROTO
+      regex: (?i)(?!TLSv1.[23])
+  severity: WARNING

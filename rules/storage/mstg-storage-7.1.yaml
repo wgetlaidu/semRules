@@ -1,0 +1,30 @@
+rules:
+- id: MSTG-STORAGE-7.1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序通过用户界面公开敏感数据。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Granata (IMQ Minded Security)
+    - Andrea Agnello (IMQ Minded Security)
+    category: security
+    owasp-mobile: M2
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#checking-for-sensitive-data-disclosure-through-the-user-interface-mstg-storage-7
+    verification-level:
+    - L1
+    - L2
+  pattern-either:
+  - patterns:
+    - pattern: $X.setContentTitle($V)
+    - metavariable-regex:
+        metavariable: $V
+        regex: .*(?i)(key|pin|secret|password|pwd|passwd|token).*
+  - patterns:
+    - pattern: $X.setContentText($V)
+    - metavariable-regex:
+        metavariable: $V
+        regex: .*(?i)(key|pin|secret|password|pwd|passwd|token).*
+  severity: WARNING

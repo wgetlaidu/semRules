@@ -1,0 +1,140 @@
+rules:
+- id: MSTG-PLATFORM-6.1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"WebView可以以不安全的方式从端点或本地文件系统加载远程内容。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Christian Cotignola @b4dsheep (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-webview-protocol-handlers-mstg-platform-6
+    verification-level:
+    - L1
+    - L2
+  options:
+    symbolic_propagation: true
+  pattern-either:
+  - patterns:
+    - pattern: 'WebView $WV = ...;
+
+        ...
+
+        $WV.loadUrl("$X");
+
+        '
+    - metavariable-regex:
+        metavariable: $X
+        regex: ^(?!https?).*:\/\/.+$
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n    loadUrl(\"\
+        $Y\");\n    ...\n  }\n}\n"
+    - metavariable-regex:
+        metavariable: $Y
+        regex: ^(?!https?).*:\/\/.+$
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n    this.loadUrl(\"\
+        $Y\");\n    ...\n  }\n}\n"
+    - metavariable-regex:
+        metavariable: $Y
+        regex: ^(?!https?).*:\/\/.+$
+  - patterns:
+    - pattern: 'WebView $WV = new WebView(...);
+
+        ...
+
+        '
+    - pattern-not-inside: 'WebView $WV = $G;
+
+        ...
+
+        $WV.getSettings().setAllowFileAccess(false);
+
+        ...
+
+        '
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    getSettings().setAllowFileAccess(false);\n    ...\n  }\n}\n"
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    this.getSettings().setAllowFileAccess(false);\n    ...\n  }\n}\n"
+  - patterns:
+    - pattern: 'WebView $WV = new WebView(...);
+
+        ...
+
+        '
+    - pattern-not-inside: 'WebView $WV = $G;
+
+        ...
+
+        $WV.getSettings().setAllowFileAccessFromFileURLs(false);
+
+        ...
+
+        '
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    getSettings().setAllowFileAccessFromFileURLs(false);\n    ...\n  }\n\
+        }\n"
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    this.getSettings().setAllowFileAccessFromFileURLs(false);\n    ...\n\
+        \  }\n}\n"
+  - patterns:
+    - pattern: 'WebView $WV = new WebView(...);
+
+        ...
+
+        '
+    - pattern-not-inside: 'WebView $WV = $G;
+
+        ...
+
+        $WV.getSettings().setAllowUniversalAccessFromFileURLs(false);
+
+        ...
+
+        '
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    getSettings().setAllowUniversalAccessFromFileURLs(false);\n    ...\n\
+        \  }\n}\n"
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    this.getSettings().setAllowUniversalAccessFromFileURLs(false);\n    ...\n\
+        \  }\n}\n"
+  - patterns:
+    - pattern: 'WebView $WV = new WebView(...);
+
+        ...
+
+        '
+    - pattern-not-inside: 'WebView $WV = $G;
+
+        ...
+
+        $WV.getSettings().setAllowContentAccess(false);
+
+        ...
+
+        '
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    getSettings().setAllowContentAccess(false);\n    ...\n  }\n}\n"
+  - patterns:
+    - pattern: "class $WV extends WebView {\n  ...\n}\n"
+    - pattern-not: "class $WV extends WebView {\n  ...\n  $FUNC(...) {\n    ...\n\
+        \    this.getSettings().setAllowContentAccess(false);\n    ...\n  }\n}\n"
+  severity: WARNING

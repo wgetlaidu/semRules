@@ -1,0 +1,23 @@
+rules:
+- id: MSTG-CODE-8.2
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序静态地定义了属性“$V”，以防止垃圾收集器清理内存。\"\n}"
+  metadata:
+    area: code
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M7
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05i-Testing-Code-Quality-and-Build-Settings.md#memory-corruption-bugs-mstg-code-8
+    verification-level:
+    - L2
+  patterns:
+  - pattern-not-inside: $M(...){...}
+  - pattern: static $T $V;
+  - metavariable-regex:
+      metavariable: $T
+      regex: .*(View|Activity|Context).*
+  severity: WARNING

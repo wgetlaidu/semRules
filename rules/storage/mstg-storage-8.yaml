@@ -1,0 +1,23 @@
+rules:
+- id: MSTG-STORAGE-8
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序允许自动备份。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Michele Di @cyberaz0r (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#testing-backups-for-sensitive-data-mstg-storage-8
+    verification-level:
+    - L2
+  paths:
+    include:
+    - '**/AndroidManifest.xml'
+  patterns:
+  - pattern: <application ... />
+  - pattern-not: <application ... android:allowBackup="false" ... />
+  severity: WARNING

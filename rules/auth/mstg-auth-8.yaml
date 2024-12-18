@@ -1,0 +1,34 @@
+rules:
+- id: MSTG-AUTH-8
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序似乎没有正确实现生物识别身份验证。\"\n}"
+  metadata:
+    area: authentication
+    authors:
+    - Maurizio Siddu @akabe1 (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05f-Testing-Local-Authentication.md#testing-biometric-authentication-mstg-auth-8
+    verification-level:
+    - L2
+  patterns:
+  - pattern-either:
+    - patterns:
+      - pattern-inside: "$RET onAuthenticationSucceeded(FingerprintManager.AuthenticationResult\
+          \ $RES) {\n  ...\n}\n"
+    - patterns:
+      - pattern-inside: "$RET onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult\
+          \ $RES) {\n  ...\n}\n"
+    - patterns:
+      - pattern-inside: "$RET onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult\
+          \ $RES) {\n  ...\n}\n"
+  - pattern-not-inside: "$RET onAuthenticationSucceeded(FingerprintManager.AuthenticationResult\
+      \ $RES) {\n  ...\n  $CIP = $RES.getCryptoObject().getCipher();\n}\n"
+  - pattern-not-inside: "$RET onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult\
+      \ $RES) {\n  ...\n  $CIP = $RES.getCryptoObject().getCipher();\n}\n"
+  - pattern-not-inside: "$RET onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult\
+      \ $RES) {\n  ...\n  $CIP = $RES.getCryptoObject().getCipher();\n}\n"
+  severity: WARNING

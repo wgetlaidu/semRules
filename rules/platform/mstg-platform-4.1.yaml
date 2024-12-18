@@ -1,0 +1,29 @@
+rules:
+- id: MSTG-PLATFORM-4.1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"挂起的意图必须声明为不可变的，并指定将接收基本意图的确切包、操作和组件。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-for-sensitive-functionality-exposure-through-ipc-mstg-platform-4
+    verification-level:
+    - L1
+    - L2
+  patterns:
+  - pattern-inside: "$T(...){\n  ...\n  (PendingIntent $I) = PendingIntent.$M($A,\
+      \ $B, $C, $D, ...);\n  ...\n}\n"
+  - pattern-not-inside: "$T(...){\n  ...\n  (PendingIntent $E) = PendingIntent.$M(...);\n\
+      \  ...\n  $E.setClassName(...);\n  ...\n}\n"
+  - pattern: PendingIntent.$M($A, $B, $C, $D, ...)
+  - metavariable-regex:
+      metavariable: $M
+      regex: (getActivity|getActivities|getBroadcast|getForegroundService|getService)
+  - metavariable-comparison:
+      comparison: $D & 0x04000000 > 0
+  severity: WARNING

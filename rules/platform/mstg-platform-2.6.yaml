@@ -1,0 +1,30 @@
+rules:
+- id: MSTG-PLATFORM-2.6
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"在常规实例化的片段中发现了潜在的片段注入。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M7
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-for-fragment-injection-mstg-platform-2
+    verification-level:
+    - L1
+    - L2
+  mode: taint
+  pattern-sinks:
+  - pattern: Fragment.instantiate(...)
+  pattern-sources:
+  - patterns:
+    - pattern-inside: class $CLASS extends FragmentActivity { ... }
+    - pattern-either:
+      - pattern: '... .getIntent().$GETMETHOD(...)'
+      - pattern: getIntent().$GETMETHOD(...)
+    - metavariable-regex:
+        metavariable: $GETMETHOD
+        regex: get.*
+  severity: WARNING

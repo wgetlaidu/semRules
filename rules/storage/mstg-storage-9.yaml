@@ -1,0 +1,38 @@
+rules:
+- id: MSTG-STORAGE-9
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"当敏感数据移到后台时，应用程序不会将其从视图中删除。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#finding-sensitive-information-in-auto-generated-screenshots-mstg-storage-9
+    verification-level:
+    - L2
+  patterns:
+  - pattern-either:
+    - patterns:
+      - pattern-either:
+        - pattern: getWindow().setFlags($P1, $P2)
+        - pattern: (...).getWindow().setFlags($P1, $P2)
+        - pattern: (Window $W).setFlags($P1, $P2)
+        - pattern: getWindow().addFlags($P1)
+        - pattern: (...).getWindow().addFlags($P1)
+        - pattern: (Window $W).addFlags($P1)
+      - metavariable-comparison:
+          comparison: $P1 & 8192 == 0
+    - patterns:
+      - pattern: public class $CLASS extends $ACT{ ... }
+      - pattern-not: "public class $CLASS{...\n  $M(...){...\n    (...).addFlags(...);\n\
+          \  ...}\n...}\n"
+      - pattern-not: "public class $CLASS{...\n  $M(...){...\n    (...).setFlags(...);\n\
+          \  ...}\n...}\n"
+      - metavariable-regex:
+          metavariable: $ACT
+          regex: .*Activity.*
+  severity: WARNING

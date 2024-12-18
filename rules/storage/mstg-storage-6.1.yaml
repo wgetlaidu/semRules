@@ -1,0 +1,29 @@
+rules:
+- id: MSTG-STORAGE-6.1
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序可能通过IPC机制暴露敏感数据。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M3
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#determining-whether-sensitive-stored-data-has-been-exposed-via-ipc-mechanisms-mstg-storage-6
+    verification-level:
+    - L1
+    - L2
+  paths:
+    include:
+    - '**/AndroidManifest.xml'
+  patterns:
+  - pattern: <provider ... />
+  - pattern-not: <provider ... android:exported="false" ... />
+  - pattern-not: <provider ... android:permission="signatureOrSystem" ... />
+  - pattern-not: <provider ... android:permission="signature" ... />
+  - pattern-not: <provider ... android:permission="privileged" ... />
+  - pattern-not: <provider ... android:permission="signature|privileged" ... />
+  - pattern-not: <provider ... android:permission="privileged|signature" ... />
+  severity: WARNING

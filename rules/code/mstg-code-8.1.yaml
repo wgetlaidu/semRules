@@ -1,0 +1,26 @@
+rules:
+- id: MSTG-CODE-8.1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序不会在活动的“onStop（）”方法中注销广播接收器“$RCV”。\"\n}"
+  metadata:
+    area: code
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M7
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05i-Testing-Code-Quality-and-Build-Settings.md#memory-corruption-bugs-mstg-code-8
+    verification-level:
+    - L2
+  options:
+    symbolic_propagation: true
+  patterns:
+  - pattern: "public class $CLASS{\n  ...\n  $M(...){\n    ...\n    registerReceiver($RCV,\
+      \ ...);\n    ...\n  }\n}\n"
+  - pattern-not: "public class $CLASS{\n  ...\n  onStop(...){\n    ...\n    unregisterReceiver(...);\n\
+      \    ...\n  }\n}\n"
+  - focus-metavariable:
+    - $RCV
+  severity: WARNING

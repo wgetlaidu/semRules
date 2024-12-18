@@ -1,0 +1,21 @@
+rules:
+- id: MSTG-PLATFORM-5
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序允许在WebView实例中执行JavaScript。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Christian Cotignola @b4dsheep (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-javascript-execution-in-webviews-mstg-platform-5
+    verification-level:
+    - L1
+    - L2
+  pattern-either:
+  - pattern: $OBJ.setJavaScriptEnabled(true)
+  - pattern: setJavaScriptEnabled(true)
+  severity: WARNING

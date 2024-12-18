@@ -1,0 +1,36 @@
+rules:
+- id: MSTG-STORAGE-3
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序在应用程序日志中写入敏感数据。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M2
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#testing-logs-for-sensitive-data-mstg-storage-3
+    verification-level:
+    - L1
+    - L2
+  patterns:
+  - pattern-either:
+    - pattern: Log.v(...);
+    - pattern: Log.i(...);
+    - pattern: Log.w(...);
+    - pattern: Log.e(...);
+    - pattern: Log.wtf(...);
+    - pattern: System.$X.print(...);
+    - pattern: System.$X.println(...);
+    - pattern: (BufferedWriter $X).write(...);
+    - pattern: (Logger $X).log(...);
+    - pattern: (Logger $X).info(...);
+    - pattern: (Logger $X).logp(...);
+    - pattern: (Logger $X).logrb(...);
+    - pattern: (Logger $X).severe(...);
+    - pattern: (Logger $X).warning(...);
+  - pattern-either:
+    - pattern-regex: .*(?i)(key|secret|password|pwd|passwd|token|salt|seed|salt|bearer|otp|crypt|auth(?-i)|IV).*
+  severity: WARNING

@@ -1,0 +1,20 @@
+rules:
+- id: MSTG-PLATFORM-9.2
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序不强制执行任何安全策略来防止覆盖攻击。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Michele Tumolo @zer0s0urce (IMQ Minded Security)
+    - Giovanni Fazi @giovifazi (IMQ Minded Security)
+    category: security
+    owasp-mobile: M2
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-for-overlay-attacks-mstg-platform-9
+    verification-level:
+    - L2
+  patterns:
+  - pattern: android:filterTouchesWhenObscured="false"
+  severity: WARNING

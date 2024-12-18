@@ -1,0 +1,24 @@
+rules:
+- id: MSTG-PLATFORM-8.2
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序记录所有Sugar ORM查询的调试信息，可能会泄露关键信息。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Federico Dotta @apps3c (HN Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-object-persistence-mstg-platform-8
+    verification-level:
+    - L1
+    - L2
+  options:
+    symbolic_propagation: true
+  paths:
+    include:
+    - '**/AndroidManifest.xml'
+  pattern: <meta-data android:name="QUERY_LOG" android:value="true" />
+  severity: WARNING

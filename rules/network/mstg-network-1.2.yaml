@@ -1,0 +1,57 @@
+rules:
+- id: MSTG-NETWORK-1.2
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序可能通过不安全的通道发送信息，或者不使用SSLSocket的getDefaultHostnameVerifier方法\"\n\
+    }"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Granata (IMQ Minded Security)
+    - Andrea Agnello (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05g-Testing-Network-Communication.md#testing-data-encryption-on-the-network-mstg-network-1
+    verification-level:
+    - L1
+    - L2
+  paths:
+    exclude:
+    - '**/okhttp3/**'
+    - '**/volley/**'
+    - '**/okio/**'
+    - '**/retrofit2/**'
+    - '**/Ion/**'
+    - '**/asynchttpclient/**'
+    - '**/fuel/**'
+    - '**/android-async-http/**'
+  pattern-either:
+  - patterns:
+    - pattern-inside: '$METHOD(...){...}
+
+        '
+    - pattern: Socket $SOCKET = new Socket(...);
+  - patterns:
+    - pattern-inside: '$METHOD(...){...}
+
+        '
+    - pattern: $CONNECTION = (HttpURLConnection) $URI.openConnection();
+  - patterns:
+    - pattern-either:
+      - patterns:
+        - pattern-inside: 'import java.net.Socket;
+
+            ...
+
+            '
+        - pattern-not-regex: .*\.getDefaultHostnameVerifier().*
+      - patterns:
+        - pattern-inside: 'import javax.net.ssl.SSLSocket;
+
+            ...
+
+            '
+        - pattern-not-regex: .*\.getDefaultHostnameVerifier().*
+  severity: WARNING

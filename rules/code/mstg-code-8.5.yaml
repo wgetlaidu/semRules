@@ -1,0 +1,25 @@
+rules:
+- id: MSTG-CODE-8.5
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序使用非静态匿名类“$IC”，可能会导致内存泄漏。\"\n}"
+  metadata:
+    area: code
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M7
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05i-Testing-Code-Quality-and-Build-Settings.md#memory-corruption-bugs-mstg-code-8
+    verification-level:
+    - L2
+  options:
+    symbolic_propagation: true
+  patterns:
+  - pattern: "class $C{\n  ...\n  class $IC extends Thread{\n    ...\n  }\n}\n"
+  - pattern-not: "class $C{\n  ...\n  static class $IC extends Thread{\n    ...\n\
+      \  }\n}\n"
+  - focus-metavariable:
+    - $IC
+  severity: WARNING

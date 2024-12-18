@@ -1,0 +1,47 @@
+rules:
+- id: MSTG-CRYPTO-1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序依赖于具有硬编码密钥的对称密码学作为唯一的加密方法。\"\n}"
+  metadata:
+    area: cryptography
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M2
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05e-Testing-Cryptography.md#testing-symmetric-cryptography-mstg-crypto-1
+    verification-level:
+    - L1
+    - L2
+  options:
+    symbolic_propagation: true
+  pattern-either:
+  - patterns:
+    - pattern: "class $CLASS{ ...\nbyte[] $K = new byte[]{$X, ...};\n...\n$M(...){\
+        \ ...\n  new SecretKeySpec(this.$K,...);\n... }\n...}\n"
+    - focus-metavariable:
+      - $K
+  - patterns:
+    - pattern: "class $CLASS{ ...\nString $K = \"=~/.+/\";\n...\n$M(...){ ...\n  new\
+        \ SecretKeySpec(this.$K.$TB(),...);\n... }\n...}\n"
+    - metavariable-regex:
+        metavariable: $TB
+        regex: (toByteArray|getBytes)
+    - focus-metavariable:
+      - $K
+  - patterns:
+    - pattern: "class $CLASS{ ...\n...\n$M(...){ ...\n  new SecretKeySpec($K.$TB(),...);\n\
+        ... }\n...}\n"
+    - metavariable-regex:
+        metavariable: $TB
+        regex: (toByteArray|getBytes)
+    - metavariable-pattern:
+        metavariable: $K
+        pattern-either:
+        - pattern: getString(...)
+        - pattern: $X.getString(...)
+    - focus-metavariable:
+      - $K
+  severity: WARNING

@@ -1,0 +1,31 @@
+rules:
+- id: MSTG-STORAGE-1
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序将凭据存储在Android Keystore之外。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M2
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#testing-local-storage-for-sensitive-data-mstg-storage-1-and-mstg-storage-2
+    verification-level:
+    - L1
+    - L2
+  paths:
+    exclude:
+    - '**/values-*/**'
+  patterns:
+  - pattern-either:
+    - pattern: <string name="$S">$X</string>
+    - pattern: <array name="$S"><item>$X</item></array>
+  - metavariable-regex:
+      metavariable: $S
+      regex: .*(?i)(key|secret|password|pwd|passwd|token|salt|seed|salt|bearer|auth|otp|crypt(?-i)|IV).*
+  - metavariable-analysis:
+      analyzer: entropy
+      metavariable: $X
+  severity: WARNING

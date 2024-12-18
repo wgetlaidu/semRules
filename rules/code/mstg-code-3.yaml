@@ -1,0 +1,23 @@
+rules:
+- id: MSTG-CODE-3
+  languages:
+  - generic
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序使用Android NDK构建系统，而不剥离调试符号。\"\n}"
+  metadata:
+    area: code
+    authors:
+    - Martino Lessio @mlessio (IMQ Minded Security)
+    category: security
+    owasp-mobile: M9
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05i-Testing-Code-Quality-and-Build-Settings.md#testing-for-debugging-symbols-mstg-code-3
+    verification-level:
+    - L2
+  paths:
+    include:
+    - '**/build.gradle'
+  patterns:
+  - pattern-inside: externalNativeBuild{ ... }
+  - pattern: -fvisibility=hidden
+  severity: WARNING

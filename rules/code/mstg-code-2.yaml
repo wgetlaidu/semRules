@@ -1,0 +1,23 @@
+rules:
+- id: MSTG-CODE-2
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序在构建时将“android:debuggable”标志设置为true。\"\n}"
+  metadata:
+    area: code
+    authors:
+    - Martino Lessio @mlessio (IMQ Minded Security)
+    category: security
+    owasp-mobile: M9
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05i-Testing-Code-Quality-and-Build-Settings.md#testing-whether-the-app-is-debuggable-mstg-code-2
+    verification-level:
+    - L2
+  paths:
+    include:
+    - '**/AndroidManifest.xml'
+  patterns:
+  - pattern-inside: <application ... > ... </application>
+  - pattern: android:debuggable="true"
+  severity: WARNING

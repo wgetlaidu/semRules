@@ -1,0 +1,26 @@
+rules:
+- id: MSTG-CODE-8.3
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序使用了容易发生内存泄漏的危险内部类。\"\n}"
+  metadata:
+    area: code
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M7
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05i-Testing-Code-Quality-and-Build-Settings.md#memory-corruption-bugs-mstg-code-8
+    verification-level:
+    - L2
+  pattern-either:
+  - patterns:
+    - pattern: "class $C{\n  ...\n  class $INNER{\n    ...\n    $F(...,$A $P, ...){...}\n\
+        \    ...\n  }\n  ...\n}\n"
+    - metavariable-regex:
+        metavariable: $A
+        regex: .*Activity
+    - focus-metavariable:
+      - $INNER
+  severity: WARNING

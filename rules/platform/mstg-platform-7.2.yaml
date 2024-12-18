@@ -1,0 +1,29 @@
+rules:
+- id: MSTG-PLATFORM-7.2
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序通过WebView“$WV”公开Java类“$class”。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    - Federico Dotta @apps3c (HN Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#determining-whether-java-objects-are-exposed-through-webviews-mstg-platform-7
+    verification-level:
+    - L1
+    - L2
+  pattern-either:
+  - patterns:
+    - pattern: $WV.addJavascriptInterface(($CLASS $X),$Y)
+    - pattern-not: this.addJavascriptInterface(($CLASS $X),$Y)
+  - patterns:
+    - pattern-inside: class $WV{ ... }
+    - pattern: addJavascriptInterface(($CLASS $X),$Y)
+  - patterns:
+    - pattern-inside: class $WV{ ... }
+    - pattern: this.addJavascriptInterface(($CLASS $X),$Y)
+  severity: WARNING

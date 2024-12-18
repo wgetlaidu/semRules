@@ -1,0 +1,31 @@
+rules:
+- id: MSTG-PLATFORM-2.4
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"在FileProvider路径配置文件中检测到“$PATH”的使用。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M7
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-for-injection-flaws-mstg-platform-2
+    verification-level:
+    - L1
+    - L2
+  patterns:
+  - pattern-inside: <paths />
+  - pattern-either:
+    - pattern: <root-path path="$PATH" />
+    - pattern: <files-path path="$PATH" />
+    - pattern: <cache-path path="$PATH" />
+    - pattern: <external-path path="$PATH" />
+    - pattern: <external-files-path path="$PATH" />
+    - pattern: <external-cache-path path="$PATH" />
+    - pattern: <external-media-path path="$PATH" />
+  - metavariable-regex:
+      metavariable: $PATH
+      regex: ^[\/\.\*]\/?$
+  severity: WARNING

@@ -1,0 +1,47 @@
+rules:
+- id: MSTG-PLATFORM-3
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"该应用程序通过自定义URL方案提供功能。建议手动检查可能的敏感数据或功能暴露。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-deep-links-mstg-platform-3
+    verification-level:
+    - L1
+    - L2
+  paths:
+    include:
+    - '**/AndroidManifest.xml'
+  patterns:
+  - pattern: '<intent-filter ...>
+
+      ...
+
+      <category android:name="$A" />
+
+      ...
+
+      <category android:name="$B" />
+
+      ...
+
+      <data>...</data>
+
+      </intent-filter>
+
+      '
+  - metavariable-regex:
+      metavariable: $A
+      regex: android.intent.category.DEFAULT|android.intent.category.BROWSABLE
+  - metavariable-regex:
+      metavariable: $B
+      regex: android.intent.category.DEFAULT|android.intent.category.BROWSABLE
+  - metavariable-comparison:
+      comparison: str($A) != str($B)
+  severity: WARNING

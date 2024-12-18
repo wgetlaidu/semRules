@@ -1,0 +1,31 @@
+rules:
+- id: MSTG-NETWORK-1.1
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序通过使用HttpURLConnection在不安全的通道上传输信息。建议验证网络安全配置是否正确配置，以防止此类不安全的传输。\"\
+    \n}"
+  metadata:
+    area: storage
+    authors:
+    - Andrea Agnello (IMQ Minded Security)
+    - Riccardo Granata (IMQ Minded Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05g-Testing-Network-Communication.md#testing-data-encryption-on-the-network-mstg-network-1
+    verification-level:
+    - L1
+    - L2
+  paths:
+    include:
+    - '**/AndroidManifest.xml'
+  pattern-either:
+  - patterns:
+    - pattern: <uses-sdk ... android:targetSdkVersion="$VE" .../>
+    - metavariable-comparison:
+        comparison: int($VE) < 28
+        metavariable: $VE
+  - patterns:
+    - pattern: <application ... android:usesCleartextTraffic="true" ... />
+  severity: WARNING

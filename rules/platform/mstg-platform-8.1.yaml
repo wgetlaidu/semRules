@@ -1,0 +1,62 @@
+rules:
+- id: MSTG-PLATFORM-8.1
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序使用可能不安全的持久性原语保存对象，这些原语显然不使用加密。\"\n}"
+  metadata:
+    area: platform
+    authors:
+    - Federico Dotta @apps3c (HN Security)
+    category: security
+    owasp-mobile: M1
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05h-Testing-Platform-Interaction.md#testing-object-persistence-mstg-platform-8
+    verification-level:
+    - L1
+    - L2
+  paths:
+    exclude:
+    - '**/org/apache/commons/**'
+  pattern-either:
+  - patterns:
+    - pattern-either:
+      - pattern: (ObjectOutputStream $X).writeObject(...)
+      - pattern: (ObjectOutputStream $X).writeUnshared(...)
+      - pattern: new Gson()
+      - pattern: new ObjectMapper(...)
+      - pattern: XmlSerializer $Y = $X.newSerializer();
+      - pattern: (XStream $X).toXML(...)
+      - pattern: $X.getWritableDb(...)
+      - pattern: ActiveAndroid.initialize(...)
+      - patterns:
+        - pattern: new RealmConfiguration.Builder(...). ... .build()
+        - pattern-not: new RealmConfiguration.Builder(...). ... .encryptionKey(...).
+            ... .build()
+      - patterns:
+        - pattern: new SyncConfiguration.Builder(...). ... .build()
+        - pattern-not: new SyncConfiguration.Builder(...). ... .encryptionKey(...).
+            ... .build()
+    - pattern-not-inside: "$M(...){ \n  ...\n  (Cipher $S).doFinal(...);\n  ...\n\
+        }\n"
+  - patterns:
+    - pattern-either:
+      - pattern: class $C extends ObjectOutputStream
+      - pattern: class $C extends JSONArray
+      - pattern: class $C extends JSONObject
+      - pattern: class $C extends Gson
+      - pattern: class $C extends ObjectMapper
+      - pattern: class $C extends Moshi
+      - pattern: class $C extends XStream
+      - pattern: class $C extends com.activeandroid.app.Application
+    - pattern-not-inside: "class $C extends $T {\n  $M(...){ \n    ...\n    (Cipher\
+        \ $S).doFinal(...);\n    ...\n  }\n}\n"
+  - patterns:
+    - pattern-either:
+      - patterns:
+        - pattern: import com.j256
+        - pattern-not: import com.j256.ormlite.cipher
+      - pattern: import com.github.satyan
+    - pattern-not-inside: "import $I;\n...\nclass $C extends $T {\n  $M(...){ \n \
+        \   ...\n    (Cipher $S).doFinal(...);\n    ...\n  }\n}\n"
+  severity: WARNING

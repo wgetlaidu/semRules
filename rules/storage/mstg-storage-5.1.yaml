@@ -1,0 +1,31 @@
+rules:
+- id: MSTG-STORAGE-5.1
+  languages:
+  - xml
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"处理敏感数据的文本输入未禁用键盘缓存。\"\n}"
+  metadata:
+    area: storage
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M2
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05d-Testing-Data-Storage.md#determining-whether-the-keyboard-cache-is-disabled-for-text-input-fields-mstg-storage-5
+    verification-level:
+    - L1
+    - L2
+  paths:
+    include:
+    - '*.xml'
+  patterns:
+  - pattern-inside: <EditText android:id="$ID" ... />
+  - metavariable-regex:
+      metavariable: $ID
+      regex: .*(?i)(key|secret|password|pwd|passwd|token|seed|cc|otp).*
+  - pattern-not: <EditText  ... android:inputType="=~/textNoSuggestions/" ... />
+  - pattern-not: <EditText  ... android:inputType="=~/textPassword/" ... />
+  - pattern-not: <EditText  ... android:inputType="=~/textVisiblePassword/" ... />
+  - pattern-not: <EditText  ... android:inputType="=~/numberPassword/" ... />
+  - pattern-not: <EditText  ... android:inputType="=~/textWebPassword/" ... />
+  severity: WARNING

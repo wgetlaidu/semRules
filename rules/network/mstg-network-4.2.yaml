@@ -1,0 +1,36 @@
+rules:
+- id: MSTG-NETWORK-4.2
+  languages:
+  - java
+  message: "{\n    \"vuln_type\": \"android\",\n    \"level\": \"WARNING\",\n    \"\
+    message\": \"应用程序可能无法正确实现SSL固定。\"\n}"
+  metadata:
+    area: network
+    authors:
+    - Riccardo Cardelli @gand3lf (IMQ Minded Security)
+    category: security
+    owasp-mobile: M3
+    references:
+    - https://github.com/OWASP/owasp-mastg/blob/v1.5.0/Document/0x05g-Testing-Network-Communication.md#testing-custom-certificate-stores-and-certificate-pinning-mstg-network-4
+    verification-level:
+    - L2
+  options:
+    symbolic_propagation: true
+  pattern-either:
+  - pattern: (SSLContext $X).init(null, null, null);
+  - pattern: (TrustManagerFactory $X).init(null);
+  - patterns:
+    - pattern: new CertificatePinner.Builder().add("$D", "$P")
+    - metavariable-regex:
+        metavariable: $P
+        regex: .*(?i)(sha1/).*
+  - patterns:
+    - pattern: (HttpsURLConnection $X).connect();
+    - pattern-not-inside: '(HttpsURLConnection $X).setSSLSocketFactory(...);
+
+        ...
+
+        (HttpsURLConnection $X).connect();
+
+        '
+  severity: WARNING
